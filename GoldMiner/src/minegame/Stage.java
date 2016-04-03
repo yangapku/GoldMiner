@@ -158,19 +158,21 @@ public class Stage extends JPanel {
         }, 0, 100);
     }
     Image gameoverPic=Toolkit.getDefaultToolkit().createImage("res/images/gameover.jpg");
+    Image gamebgPic=Toolkit.getDefaultToolkit().createImage("res/images/map_bg_0.png");
     @Override
     public void paint(Graphics g) {
         g.clearRect(0, 0, (int)width, (int)height);
         switch (stageState) {
             case PLAYING:
+            	g.drawImage(gamebgPic,0,0,(int)width,(int)height,this);
                 try {
                 	hook.paint(g);
                 } catch (IOException error) {}
                 for (Mineral m : mineralList) {
                     m.paint(g);
                 }
-                g.setColor(Color.blue);
-                g.drawString("Remaining Time:"+(int)(lifetime/10.0)+" Score:"+score+" Goal:"+requireScore,500,20);
+                g.setColor(Color.red);
+                g.drawString("Remaining Time:"+(int)(lifetime/10.0)+" Score:"+score+" Goal:"+requireScore,0,15);
                 break;
             case MENU:
                 break;
