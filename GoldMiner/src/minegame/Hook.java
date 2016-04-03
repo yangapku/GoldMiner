@@ -2,8 +2,10 @@ package minegame;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
-import javax.swing.ImageIcon;
+import javax.imageio.ImageIO;
 
 
 /**
@@ -14,7 +16,7 @@ public class Hook {
     private double sourceY;
     private double theta=0.0;
     private double d=0.0;
-    final double r = 1.0;
+    final double r = 15.0;
     private double weight=0.0;
 
     private Mineral mineral;//钩到的物体
@@ -86,6 +88,7 @@ public class Hook {
                 break;
             case BACKWARD:
             	d -= getVelocity();
+            	mineral.refresh(getX(), getY());
             	if (d <= 0){
             		stage.score += mineral.value;
             		d = 0;
@@ -94,6 +97,32 @@ public class Hook {
             	}
             	break;
         }
+    }
+    
+    /*Updated by czj*/
+    /*画线, 钩子, 钩到的物体*/
+    void paint(Graphics g) throws IOException{
+    	switch (state) {
+    	case BACKWARD:
+    		/*TODO:画钩到的物体*/    		
+    	default:
+    		/*画钩子*/
+    		BufferedImage hookImage = ImageIO.read(new File("res/images/hook.png"));
+        	BufferedImage rotatedImage = rotateImage(hookImage, theta);
+        	g.drawImage(rotatedImage,
+        			(int)(getX() - r), (int)r, 2*(int)r, 2*(int)r, null);
+        	/*画线*/
+        	g.drawLine((int)sourceX, (int)sourceY, (int)getX(), (int)getY());
+    	}    	
+    }
+
+    void launch(){
+        if(state==HookState.WAIT)
+            state = HookState.FORWARD;
+    }
+
+    private static double distance(double x1, double y1, double x2, double y2){
+        return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
     }
     
     /*旋转图片*/
@@ -112,63 +141,6 @@ public class Hook {
         graphics2d.drawImage(bufferedimage, 0, 0, null);
         graphics2d.dispose();
         return img;
-    }
-    
-    /*Image转换成BufferedImage*/
-    public static BufferedImage toBufferedImage(Image image) {
-        if (image instanceof BufferedImage) {
-            return (BufferedImage)image;
-         }
-
-         image = new ImageIcon(image).getImage();
-
-         BufferedImage bimage = null;
-         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-         try {
-             int transparency = Transparency.OPAQUE;
-             GraphicsDevice gs = ge.getDefaultScreenDevice();
-             GraphicsConfiguration gc = gs.getDefaultConfiguration();
-             bimage = gc.createCompatibleImage(
-             image.getWidth(null), image.getHeight(null), transparency);
-         } catch (HeadlessException e) {}
-     
-        if (bimage == null) {
-            int type = BufferedImage.TYPE_INT_RGB;
-            bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
-        }
-
-        Graphics g = bimage.createGraphics();
-
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
-     
-        return bimage;
-    }
-    
-    /*Updated by czj*/
-    /*画线, 钩子, 钩到的物体*/
-    void paint(Graphics g){
-    	switch (state) {
-    	case BACKWARD:
-    		/*TODO:画钩到的物体*/    		
-    	default:
-    		/*画钩子*/
-    		Image hookImage = new ImageIcon("res/images/gold.png").getImage();
-        	BufferedImage rotatedImage = rotateImage(toBufferedImage(hookImage), theta);
-        	g.drawImage(rotatedImage,
-        			(int)getX() - rotatedImage.getWidth() / 2, (int)getY(), null);
-        	/*画线*/
-        	g.drawLine((int)sourceX, (int)sourceY, (int)getX(), (int)getY());
-    	}    	
-    }
-
-    void launch(){
-        if(state==HookState.WAIT)
-            state = HookState.FORWARD;
-    }
-
-    private static double distance(double x1, double y1, double x2, double y2){
-        return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
     }
 
 }

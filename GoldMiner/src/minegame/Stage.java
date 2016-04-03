@@ -142,21 +142,25 @@ public class Stage extends JPanel {
         }
         lifetime--;
 
-        for(int i=0; i<mineralList.size(); i++){
+        /*for(int i=0; i<mineralList.size(); i++){
             mineralList.get(i).refresh();
-        }
+        }*/
         hook.refresh(this);
 
         repaint();
     }
 
-    public void paintComponent(Graphics g) {
+    /*public void paintComponent(Graphics g) {
         super.paint(g);
-        hook.paint(g);
+        try {
+        	hook.paint(g);
+        } catch (IOException IOEx) {
+        	
+        }
         for (Mineral m : mineralList) {
             m.paint(g);
         }
-    }
+    }*/
 
     void start() {
         stageState = StageState.PLAYING;
@@ -178,7 +182,9 @@ public class Stage extends JPanel {
     	g.clearRect(0, 0, (int)width, (int)height);
         switch (stageState) {
             case PLAYING:
-                hook.paint(g);
+                try {
+                	hook.paint(g);
+                } catch (IOException error) {}
                 for (Mineral m : mineralList) {
                     m.paint(g);
                 }
