@@ -24,7 +24,7 @@ public abstract class Mineral {
     }
     abstract void paint(Graphics g);
     
-    /*更新矿物位置*/
+    /*加入了更新矿物位置的函数，在被勾住之后hook通过该函数使其位置保持同步*/
     void refresh(double newX, double newY) {
     	x = newX;
     	y = newY;

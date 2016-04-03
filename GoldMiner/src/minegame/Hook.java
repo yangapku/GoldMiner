@@ -104,7 +104,7 @@ public class Hook {
     void paint(Graphics g) throws IOException{
     	switch (state) {
     	case BACKWARD:
-    		/*TODO:画钩到的物体*/    		
+    		mineral.paint(g);	//先画钩到的物体，再进入default画钩子和线
     	default:
     		/*画钩子*/
     		BufferedImage hookImage = ImageIO.read(new File("res/images/hook.png"));

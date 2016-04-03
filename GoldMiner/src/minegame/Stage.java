@@ -162,7 +162,7 @@ public class Stage extends JPanel {
     }*/
 
     void start() {
-        stageState = StageState.MENU;
+        stageState = StageState.PLAYING;
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
