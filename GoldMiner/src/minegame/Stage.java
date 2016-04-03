@@ -118,7 +118,6 @@ public class Stage extends JPanel {
             	score = 0;
             	load(order);
             }
-            start();
         }
     }
 
