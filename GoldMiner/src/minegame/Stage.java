@@ -174,11 +174,7 @@ public class Stage extends JPanel {
     Image gameoverPic=Toolkit.getDefaultToolkit().createImage("res/images/gameover.jpg");
     @Override
     public void paint(Graphics g) {
-<<<<<<< Updated upstream
-    	g.clearRect(0, 0, (int)width, (int)height);
-=======
         g.clearRect(0, 0, (int)width, (int)height);
->>>>>>> Stashed changes
         switch (stageState) {
             case PLAYING:
                 hook.paint(g);
