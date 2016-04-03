@@ -73,6 +73,8 @@ public class Stage extends JPanel {
         			break;
         	}
         }
+        br.close();
+        isr.close();
     }
 
 
@@ -173,6 +175,7 @@ public class Stage extends JPanel {
 
     @Override
     public void paint(Graphics g) {
+    	g.clearRect(0, 0, (int)width, (int)height);
         switch (stageState) {
             case PLAYING:
                 hook.paint(g);

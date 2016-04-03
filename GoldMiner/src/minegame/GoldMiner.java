@@ -11,7 +11,7 @@ import java.io.IOException;
 public class GoldMiner extends JFrame{
     Stage stage;
     static final double TIME_STEP = 1.0; //单位事件步长
-    static final double PERIOD = 100.0;
+    static final double PERIOD = 20.0;
 
     public GoldMiner() throws IOException{
         setSize(800,600);
