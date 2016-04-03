@@ -10,13 +10,14 @@ import javax.imageio.ImageIO;
 
 /**
  * Created by lzc on 4/2/16.
+ * Updated by czj
  */
 public class Hook {
     private double sourceX;
     private double sourceY;
     private double theta=0.0;
     private double d=0.0;
-    final double r = 15.0;
+    final double r = 25.0;
     private double weight=500.0;
 
     private Mineral mineral;//钩到的物体
@@ -28,7 +29,7 @@ public class Hook {
 
     public Hook(double width, double height){
         sourceX = width/2;
-        sourceY = height/4; //需要根据背景调节到合适的起始高度
+        sourceY = 180; //需要根据背景调节到合适的起始高度
 
         state = HookState.WAIT;
     }
@@ -48,13 +49,15 @@ public class Hook {
 
     /*分别计算拉的速度和放的速度（放的速度偏慢，不能用钩子的重量来算）*/
     double getPullVelocity(){
-        //return 15.0;
     	return 40000.0 / getWeight();
     }    
     double getPushVelocity(){
     	return 20.0;
     }
     
+    boolean hasMineral() {
+    	return mineral != null;
+    }
 
     boolean hookMineral(Mineral m){
         if(distance(getX(),getY(),m.x,m.y) < (r+m.r)){
@@ -65,7 +68,7 @@ public class Hook {
         }else return false;
     }
 
-    /*Updated by czj*/
+    
     /*每次时间循环时更新钩子位置和角度, 速度与钩子重量有关; 判断是否抓到矿物 */
     void refresh(Stage stage){
         switch (state){
@@ -122,7 +125,6 @@ public class Hook {
         }
     }
     
-    /*Updated by czj*/
     /*画线, 钩子, 钩到的物体*/
     void paint(Graphics g) throws IOException{
     	switch (state) {
@@ -131,13 +133,13 @@ public class Hook {
     			mineral.paint(g);	//先画钩到的物体，再进入default画钩子和线
     		}    		
     	default:
+    		/*画线*/
+        	g.drawLine((int)sourceX, (int)(sourceY), (int)getX(), (int)getY());
     		/*画钩子*/
-    		BufferedImage hookImage = ImageIO.read(new File("res/images/hook.png"));
+    		BufferedImage hookImage = ImageIO.read(new File("res/images/hook2.png"));
         	BufferedImage rotatedImage = rotateImage(hookImage, theta);
         	g.drawImage(rotatedImage,
         			(int)(getX() - r), (int)(getY() - r), 2*(int)r, 2*(int)r, null);
-        	/*画线*/
-        	g.drawLine((int)sourceX, (int)(sourceY), (int)getX(), (int)getY());
     	}    	
     }
 

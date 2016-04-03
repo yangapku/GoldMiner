@@ -24,6 +24,7 @@ public class Stage extends JPanel {
     double height = 600;
 
     int order;//关数
+    final int totalOrder = 2;
 
     /*关卡生成加载的变量*/
     int lifetime;
@@ -105,18 +106,29 @@ public class Stage extends JPanel {
     }
 
     /*下一关*/
-    void next() throws IOException {
+    void next() throws IOException{
         if (score < requireScore) {
             gameOver();
         } else {
             order++;
-            load(order);
+            if (order < totalOrder) {
+            	load(order);
+            } else {
+            	order = 0;
+            	score = 0;
+            	load(order);
+            }
             start();
         }
     }
 
     void refresh() throws IOException {
         if (stageState != StageState.PLAYING) return;
+        
+        /*如果清空了就直接判断能否进入下一关*/
+        if (mineralList.isEmpty() && ! hook.hasMineral()) {
+        	next();
+        }
 
         if (lifetime <= 0) {
             timer.cancel();
