@@ -41,6 +41,7 @@ public class Stage extends JPanel {
 
     /*Updated by Yangan*/
     void load(int order) throws IOException {
+    	int minercount=0;
         this.order = order;
         mineralList.clear();
         File filepath=new File("dat/stage"+order+".dat");
@@ -50,7 +51,8 @@ public class Stage extends JPanel {
         StringTokenizer st=new StringTokenizer(linedata,",");
         lifetime=Integer.parseInt(st.nextToken());
         requireScore=Integer.parseInt(st.nextToken());
-        while((linedata=br.readLine())!=null){  //读矿物列表
+        minercount=Integer.parseInt(st.nextToken());
+        for(int i=0;i<minercount;i++){  //读矿物列表
         	linedata=br.readLine();
         	st=new StringTokenizer(linedata,",");  //格式为：矿物类型,x,y,r,value,density
         	String mineralType=st.nextToken();
