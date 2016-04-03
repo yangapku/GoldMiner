@@ -146,7 +146,6 @@ public class Stage extends JPanel {
             mineralList.get(i).refresh();
         }
         hook.refresh(this);
-
         repaint();
     }
 
@@ -159,7 +158,7 @@ public class Stage extends JPanel {
     }
 
     void start() {
-        stageState = StageState.PLAYING;
+        stageState = StageState.MENU;
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -172,17 +171,22 @@ public class Stage extends JPanel {
             }
         }, 0, 100);
     }
-
+    Image gameoverPic=Toolkit.getDefaultToolkit().createImage("res/images/gameover.jpg");
     @Override
     public void paint(Graphics g) {
+<<<<<<< Updated upstream
     	g.clearRect(0, 0, (int)width, (int)height);
+=======
+        g.clearRect(0, 0, (int)width, (int)height);
+>>>>>>> Stashed changes
         switch (stageState) {
             case PLAYING:
                 hook.paint(g);
                 for (Mineral m : mineralList) {
                     m.paint(g);
                 }
-                /*TODO: 绘制界面其它元素*/
+                g.setColor(Color.blue);
+                g.drawString("Remaining Time:"+(int)(lifetime/10.0)+" Score:"+score+" Goal:"+requireScore,500,20);
                 break;
             case MENU:
                 break;
@@ -191,6 +195,7 @@ public class Stage extends JPanel {
             case CONFIGURE:
                 break;
             case GAME_OVER:
+            	g.drawImage(gameoverPic,0,0,(int)width,(int)height,this);
                 break;
         }
     }
