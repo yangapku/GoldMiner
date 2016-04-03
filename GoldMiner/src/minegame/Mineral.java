@@ -1,7 +1,7 @@
+package minegame;
+
 import java.awt.*;
 
-import GoldMiner.Mineral;
-import GoldMiner.Stage;
 
 /**
  * Created by lzc on 4/2/16.
@@ -51,3 +51,4 @@ class Diamond extends Mineral{
 	}
 	void paint(Graphics g) {}
 }
+

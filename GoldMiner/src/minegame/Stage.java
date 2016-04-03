@@ -1,8 +1,6 @@
-import javax.swing.*;
+package minegame;
 
-import GoldMiner.Diamond;
-import GoldMiner.Gold;
-import GoldMiner.Stone;
+import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -10,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +40,10 @@ public class Stage extends JPanel {
     Timer timer;
 
     /*Updated by Yangan*/
-    void load(int order) {
+    void load(int order) throws IOException {
         this.order = order;
         mineralList.clear();
-        File filepath=new File("stagedata/stage"+order+".dat");
+        File filepath=new File("dat/stage"+order+".dat");
         InputStreamReader isr=new InputStreamReader(new FileInputStream(filepath));
         BufferedReader br=new BufferedReader(isr); //读入数据文件
         String linedata=br.readLine(); //读关卡时间和分数
@@ -76,7 +75,7 @@ public class Stage extends JPanel {
 
 
     /* 注册键盘事件 */
-    public Stage() {
+    public Stage() throws IOException {
         /*测试时直接从第一关开始*/
         load(0);
 
@@ -120,7 +119,7 @@ public class Stage extends JPanel {
     }
 
     /*下一关*/
-    void next() {
+    void next() throws IOException {
         if (score < requireScore) {
             gameOver();
         } else {
@@ -130,7 +129,7 @@ public class Stage extends JPanel {
         }
     }
 
-    void refresh() {
+    void refresh() throws IOException {
         if (stageState != StageState.PLAYING) return;
 
         if (lifetime <= 0) {
@@ -161,7 +160,11 @@ public class Stage extends JPanel {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                refresh();
+                try {
+					refresh();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
             }
         }, 0, 100);
     }
@@ -188,3 +191,4 @@ public class Stage extends JPanel {
     }
 
 }
+
