@@ -17,18 +17,18 @@ public class Hook {
     private double theta=0.0;
     private double d=0.0;
     final double r = 15.0;
-    private double weight=0.0;
+    private double weight=500.0;
 
     private Mineral mineral;//钩到的物体
 
     HookState state;
-    int hookWaitDirection = 1;
+    int hookWaitDirection = 1; //控制钩子晃动的方向
 
     enum HookState{WAIT, FORWARD, BACKWARD}
 
     public Hook(double width, double height){
         sourceX = width/2;
-        sourceY = 0.0;
+        sourceY = height/4; //需要根据背景调节到合适的起始高度
 
         state = HookState.WAIT;
     }
@@ -38,25 +38,27 @@ public class Hook {
     }
 
     double getY(){
-        return sourceY + d * Math.abs(Math.sin(theta));
+        return sourceY + d * Math.sin(theta);
     }
 
     double getWeight(){
-        return mineral==null? weight: weight+ mineral.density * mineral.r * mineral.r;
+        return mineral == null ? weight : weight 
+        		+ mineral.density * mineral.r * mineral.r;
     }
 
-
-    /*TODO:根据钩子和矿物总重量给出钩子移速*/
-    double getVelocity(){
-        return 1.0 / (getWeight()+1.0);
+    /*分别计算拉的速度和放的速度（放的速度偏慢，不能用钩子的重量来算）*/
+    double getPullVelocity(){
+        //return 15.0;
+    	return 40000.0 / getWeight();
+    }    
+    double getPushVelocity(){
+    	return 20.0;
     }
+    
 
     boolean hookMineral(Mineral m){
         if(distance(getX(),getY(),m.x,m.y) < (r+m.r)){
             mineral = m;
-            
-            /*getWeight()的时候会加，这里不用加*/
-            //weight += m.r * m.r * m.density;
 
             state = HookState.BACKWARD;
             return true;
@@ -66,10 +68,11 @@ public class Hook {
     /*Updated by czj*/
     /*每次时间循环时更新钩子位置和角度, 速度与钩子重量有关; 判断是否抓到矿物 */
     void refresh(Stage stage){
-        //System.out.println("Hook Fresh");
         switch (state){
             case WAIT:
             	theta += hookWaitDirection * Math.PI / GoldMiner.PERIOD;
+            	
+            	/*控制钩子的方向在0到PI之间，到达边界转向*/
             	if (theta >= Math.PI) {
             		hookWaitDirection = -1;
             	}
@@ -77,8 +80,17 @@ public class Hook {
             		hookWaitDirection = 1;
             	}
                 break;
+                
             case FORWARD:
-            	d += getVelocity();            	
+            	d += getPushVelocity();
+            	
+            	/*判断是否超出边界*/
+            	if (getX() < 50 || getX() > 750 || getY() > 550) {
+            		state = HookState.BACKWARD;
+            		break;
+            	}
+            	
+            	/*判断是否钩到物体*/
                 for(int i=0; i<stage.mineralList.size(); i++){
                     if(hookMineral(stage.mineralList.get(i))){
                         stage.mineralList.get(i).hooked(stage,i);
@@ -86,13 +98,24 @@ public class Hook {
                     }
                 }
                 break;
+                
             case BACKWARD:
-            	d -= getVelocity();
-            	mineral.refresh(getX(), getY());
+            	d -= getPullVelocity();
+            	
+            	/*需要判断是超出边界造成的拉回还是钩到东西造成的拉回*/
+            	if (mineral != null){
+            		/*给钩到的东西加了个位移*/
+            		mineral.refresh(getX() + r * Math.cos(theta), 
+            				getY() + r * Math.sin(theta));
+            	}
+            	
+            	/*到达后加分并回到等待状态*/
             	if (d <= 0){
-            		stage.score += mineral.value;
+            		if (mineral != null) {
+            			stage.score += mineral.value;
+            			mineral = null;
+            		}
             		d = 0;
-            		mineral = null;
             		state = HookState.WAIT;
             	}
             	break;
@@ -104,15 +127,17 @@ public class Hook {
     void paint(Graphics g) throws IOException{
     	switch (state) {
     	case BACKWARD:
-    		mineral.paint(g);	//先画钩到的物体，再进入default画钩子和线
+    		if (mineral != null){
+    			mineral.paint(g);	//先画钩到的物体，再进入default画钩子和线
+    		}    		
     	default:
     		/*画钩子*/
     		BufferedImage hookImage = ImageIO.read(new File("res/images/hook.png"));
         	BufferedImage rotatedImage = rotateImage(hookImage, theta);
         	g.drawImage(rotatedImage,
-        			(int)(getX() - r), (int)r, 2*(int)r, 2*(int)r, null);
+        			(int)(getX() - r), (int)(getY() - r), 2*(int)r, 2*(int)r, null);
         	/*画线*/
-        	g.drawLine((int)sourceX, (int)sourceY, (int)getX(), (int)getY());
+        	g.drawLine((int)sourceX, (int)(sourceY), (int)getX(), (int)getY());
     	}    	
     }
 
