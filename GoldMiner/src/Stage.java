@@ -1,9 +1,19 @@
 import javax.swing.*;
+
+import GoldMiner.Diamond;
+import GoldMiner.Gold;
+import GoldMiner.Stone;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,11 +40,38 @@ public class Stage extends JPanel {
     Hook hook = new Hook(width, height);
     Timer timer;
 
-    /*TODO*/
+    /*Updated by Yangan*/
     void load(int order) {
         this.order = order;
         mineralList.clear();
-        //TODO,加载关卡时间, 所需分数, 矿物列表
+        File filepath=new File("stagedata/stage"+order+".dat");
+        InputStreamReader isr=new InputStreamReader(new FileInputStream(filepath));
+        BufferedReader br=new BufferedReader(isr); //读入数据文件
+        String linedata=br.readLine(); //读关卡时间和分数
+        StringTokenizer st=new StringTokenizer(linedata,",");
+        lifetime=Integer.parseInt(st.nextToken());
+        requireScore=Integer.parseInt(st.nextToken());
+        while((linedata=br.readLine())!=null){  //读矿物列表
+        	linedata=br.readLine();
+        	st=new StringTokenizer(linedata,",");  //格式为：矿物类型,x,y,r,value,density
+        	String mineralType=st.nextToken();
+        	double x=Double.parseDouble(st.nextToken());
+        	double y=Double.parseDouble(st.nextToken());
+        	double r=Double.parseDouble(st.nextToken());
+        	int value=Integer.parseInt(st.nextToken());
+        	int density=Integer.parseInt(st.nextToken());
+        	switch(mineralType){  //根据不同的矿物类型建立不同对象
+        		case "S":
+        			mineralList.add(new Stone(x,y,r,value,density));
+        			break;
+        		case "G":
+        			mineralList.add(new Gold(x,y,r,value,density));
+        			break;
+        		case "D":
+        			mineralList.add(new Diamond(x,y,r,value,density));
+        			break;
+        	}
+        }
     }
 
 

@@ -1,5 +1,10 @@
 import java.awt.*;
 
+import GoldMiner.GoldMiner;
+import GoldMiner.Mineral;
+import GoldMiner.Stage;
+import GoldMiner.Hook.HookState;
+
 /**
  * Created by lzc on 4/2/16.
  */
