@@ -82,25 +82,7 @@ public class Stage extends JPanel {
     public Stage() throws IOException {
         /*测试时直接从第一关开始*/
         load(0);
-
         this.requestFocus();
-        this.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                super.keyPressed(e);
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_SPACE:
-                        hook.launch();
-                        break;
-                    case KeyEvent.VK_P:
-                        pause();
-                        break;
-                    case KeyEvent.VK_ESCAPE:
-                        configure();
-                        break;
-                }
-            }
-        });
     }
 
     void pause() {
@@ -158,7 +140,7 @@ public class Stage extends JPanel {
     }
 
     void start() {
-        stageState = StageState.MENU;
+        stageState = StageState.PLAYING;
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
