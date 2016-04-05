@@ -71,8 +71,7 @@ public class Stage extends JPanel {
                 	double y=Double.parseDouble(st.nextToken());
                 	double r=Double.parseDouble(st.nextToken());
                 	int value=Integer.parseInt(st.nextToken());
-                	int density=Integer.parseInt(st.nextToken());
-        			mineralList.add(new Stone(x,y,r,value,density));
+        			mineralList.add(new Stone(x,y,r,value));
         			break;
         		}
         		case "G":
@@ -81,8 +80,7 @@ public class Stage extends JPanel {
                 	double y=Double.parseDouble(st.nextToken());
                 	double r=Double.parseDouble(st.nextToken());
                 	int value=Integer.parseInt(st.nextToken());
-                	int density=Integer.parseInt(st.nextToken());
-        			mineralList.add(new Gold(x,y,r,value,density));
+        			mineralList.add(new Gold(x,y,r,value));
         			break;
         		}
         		case "D":
@@ -91,8 +89,7 @@ public class Stage extends JPanel {
                 	double y=Double.parseDouble(st.nextToken());
                 	double r=Double.parseDouble(st.nextToken());
                 	int value=Integer.parseInt(st.nextToken());
-                	int density=Integer.parseInt(st.nextToken());
-        			mineralList.add(new Diamond(x,y,r,value,density));
+        			mineralList.add(new Diamond(x,y,r,value));
         			break;
         		}
         		case "B":
@@ -101,6 +98,19 @@ public class Stage extends JPanel {
                 	double y=Double.parseDouble(st.nextToken());
                 	double r=Double.parseDouble(st.nextToken());
         			bombList.add(new Bomb(x,y,r,this));
+        			break;
+        		}
+        		case "M":
+        		{
+        			double x=Double.parseDouble(st.nextToken());
+                	double y=Double.parseDouble(st.nextToken());
+                	double r=Double.parseDouble(st.nextToken());
+                	int value=Integer.parseInt(st.nextToken());
+                	int movingDirection=Integer.parseInt(st.nextToken());
+                	double movingSpeed=Integer.parseInt(st.nextToken());
+                	boolean withDiamond=st.nextToken().equals("D");
+        			mineralList.add(new Mouse(x,y,r,value,
+        					movingDirection,movingSpeed, withDiamond));
         			break;
         		}
         	}
@@ -171,20 +181,14 @@ public class Stage extends JPanel {
             mineralList.get(i).refresh();
         }*/
         hook.refresh(this);
+        for (Mineral i : mineralList) {
+        	/*对老鼠来说需要更新其位置*/
+        	if (i instanceof Mouse) {
+        		((Mouse)i).runMouse();
+        	}
+        }
         repaint();
     }
-
-    /*public void paintComponent(Graphics g) {
-        super.paint(g);
-        try {
-        	hook.paint(g);
-        } catch (IOException IOEx) {
-        	
-        }
-        for (Mineral m : mineralList) {
-            m.paint(g);
-        }
-    }*/
 
     void start() {
         stageState = StageState.PLAYING;

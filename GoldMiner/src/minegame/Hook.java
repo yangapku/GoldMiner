@@ -18,20 +18,20 @@ import javax.sound.sampled.SourceDataLine;
  * Updated by czj
  */
 public class Hook {
-    private double sourceX;
-    private double sourceY;
-    private double theta=0.0;
-    private double d=0.0;
-    final double r = 25.0;
-    private double weight=500.0;
+    private double sourceX; //悬挂点
+    private double sourceY; //悬挂点
+    private double theta=0.0; //角度
+    private double d=0.0; //绳长
+    final double r = 30.0; //钩子大小
+    private double weight=800.0; //钩子本身的重量
 
     private Mineral mineral;//钩到的物体
-    String soundName; //指定播放声音文件名
+    
 
-    HookState state;
-    int hookWaitDirection = 1; //控制钩子晃动的方向
-
+    HookState state; //钩子的行进状态
     enum HookState{WAIT, FORWARD, BACKWARD}
+    
+    int hookWaitDirection = 1; //控制钩子晃动的方向
 
     public Hook(double width, double height){
         sourceX = width/2;
@@ -54,6 +54,7 @@ public class Hook {
     }
 
     /*分别计算拉的速度和放的速度（放的速度偏慢，不能用钩子的重量来算）*/
+    /*TODO 计算速度的参数可以调整*/
     double getPullVelocity(){
     	return 40000.0 / getWeight();
     }    
@@ -65,14 +66,19 @@ public class Hook {
     	return mineral != null;
     }
 
+    /*逐个判断是否钩到物体*/
+    /*TODO 钩子触发的范围可以调整*/
     boolean hookMineral(Mineral m){
         if(distance(getX(),getY(),m.x,m.y) < (r/2 + m.r)){
             mineral = m;
             state = HookState.BACKWARD;
             return true;
-        }else return false;
+        } else {
+        	return false;
+        }
     }
     
+    /*逐个判断是否触碰炸弹*/
     boolean explodeBomb(Bomb b){
     	if(distance(getX(), getY(), b.x, b.y) < (r/2 + b.r)){
     		state = HookState.BACKWARD;
@@ -88,11 +94,12 @@ public class Hook {
             case WAIT:
             	theta += hookWaitDirection * Math.PI / GoldMiner.PERIOD;
             	
-            	/*控制钩子的方向在0到PI之间，到达边界转向*/
-            	if (theta >= Math.PI) {
+            	/*控制钩子的方向，到达边界转向*/
+            	/*TODO 钩子晃动的范围可以调整*/
+            	if (theta >= Math.PI * 9 / 10) {
             		hookWaitDirection = -1;
             	}
-            	else if (theta <= 0) {
+            	else if (theta <= Math.PI / 10) {
             		hookWaitDirection = 1;
             	}
                 break;
@@ -134,23 +141,24 @@ public class Hook {
             	/*需要判断是超出边界造成的拉回还是钩到东西造成的拉回*/
             	if (mineral != null){
             		/*给钩到的东西加了个位移*/
+            		/*TODO 加位移的多少可以调整*/
             		mineral.refresh(getX() + r * Math.cos(theta), 
             				getY() + r * Math.sin(theta));
             	}
             	
             	/*到达后加分并回到等待状态*/
+            	/*TODO 判断高分物体和低分物体的界限可以调整*/
             	if (d <= 0){
             		if (mineral != null) {
             			stage.score += mineral.value;
             			
+            			/*播放声音*/
+            			String soundName; //指定播放声音文件名
             			if (mineral.value < 50) {
-            				/*指定播放low-value.mp3*/
             				soundName = "res/sounds/low-value.wav";
             			} else if (mineral.value >= 300) {
-            				/*指定播放high-value.mp3*/
             				soundName = "res/sounds/high-value.wav";
             			} else {
-            				/*指定播放normal-value.mp3*/
             				soundName = "res/sounds/normal-value.wav";
             			}
             			
@@ -171,13 +179,12 @@ public class Hook {
     	switch (state) {
     	case BACKWARD:
     		if (mineral != null){
-    			mineral.paint(g);	//先画钩到的物体，再进入default画钩子和线
+    			mineral.paint(g);	// 先画钩到的物体，再进入default画钩子和线
     		}    		
     	default:
     		/*画线*/
     		Graphics2D g2= (Graphics2D)g;
-    		g.setColor(new Color(255,245,238));
-    		g2.setStroke(new BasicStroke(2.0f));
+    		g2.setStroke(new BasicStroke(2.0f)); // 设置线条粗细
         	g2.drawLine((int)sourceX, (int)(sourceY), (int)getX(), (int)getY());
     		/*画钩子*/
     		BufferedImage hookImage = ImageIO.read(new File("res/images/hook2.png"));
