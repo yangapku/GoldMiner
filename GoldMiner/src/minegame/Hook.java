@@ -1,12 +1,21 @@
 package minegame;
 
+import java.applet.AudioClip;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  * Created by lzc on 4/2/16.
@@ -70,7 +79,7 @@ public class Hook {
 
     
     /*每次时间循环时更新钩子位置和角度, 速度与钩子重量有关; 判断是否抓到矿物 */
-    void refresh(Stage stage){
+    void refresh(Stage stage) throws UnsupportedAudioFileException, FileNotFoundException, IOException, LineUnavailableException{
         switch (state){
             case WAIT:
             	theta += hookWaitDirection * Math.PI / GoldMiner.PERIOD;
@@ -116,6 +125,18 @@ public class Hook {
             	if (d <= 0){
             		if (mineral != null) {
             			stage.score += mineral.value;
+            			if (mineral.value > 100) {
+            				/*播放high-value.mp3*/
+            				/*AudioInputStream highValue = AudioSystem.getAudioInputStream(
+            								new FileInputStream(new File("res/sounds/high-value.mp3")));
+            				AudioFormat highValueFormat = highValue.getFormat();
+            				DataLine.Info dataLineInfo = new DataLine.Info(Clip.class, highValueFormat);
+            				Clip clip = (Clip) AudioSystem.getLine(dataLineInfo);
+            				clip.open(highValue);
+            				clip.start();*/
+            			} else {
+            				/*播放low-value.mp3*/
+            			}
             			mineral = null;
             		}
             		d = 0;

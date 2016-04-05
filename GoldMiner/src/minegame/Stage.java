@@ -1,5 +1,7 @@
 package minegame;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 
 import java.awt.*;
@@ -121,7 +123,7 @@ public class Stage extends JPanel {
         }
     }
 
-    void refresh() throws IOException {
+    void refresh() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         if (stageState != StageState.PLAYING) return;
         
         /*如果清空了就直接判断能否进入下一关*/
@@ -162,7 +164,7 @@ public class Stage extends JPanel {
             public void run() {
                 try {
 					refresh();
-				} catch (IOException e) {
+				} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
 					e.printStackTrace();
 				}
             }
