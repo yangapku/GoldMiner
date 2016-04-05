@@ -2,6 +2,8 @@ package minegame;
 
 import javax.swing.*;
 
+import java.applet.Applet;
+import java.applet.AudioClip;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -152,7 +154,7 @@ public class Stage extends JPanel {
         }
     }
 
-    void refresh() throws IOException {
+	void refresh() throws IOException {
         if (stageState != StageState.PLAYING) return;
         
         /*如果清空了就直接判断能否进入下一关*/
@@ -165,7 +167,6 @@ public class Stage extends JPanel {
             next();
         }
         lifetime--;
-
         /*for(int i=0; i<mineralList.size(); i++){
             mineralList.get(i).refresh();
         }*/
@@ -209,18 +210,26 @@ public class Stage extends JPanel {
     @Override
     public void paint(Graphics g) {
         g.clearRect(0, 0, (int)width, (int)height);
-        switch (stageState) {
+        double leftPercent=1.0;
+		switch (stageState) {
             case PLAYING:
             	g.drawImage(gamebgPic,0,0,(int)width,(int)height,this);
-            	g.drawImage(scoreboard,30,20,125,80,this);
+            	g.drawImage(scoreboard,30,20,145,80,this);
             	g.setFont(new Font("Tahoma", Font.BOLD, 28));
             	g.setColor(Color.white);
-            	g.drawString(""+requireScore,70,50);
-            	g.drawString(""+score,70,90);
-            	g.drawImage(timeLineBg,20,115,140,10,this);
-            	g.drawImage(timeLineGreen,20,115,160,125,0,0,(int)((1.0*lifetime)/(1.0*totaltime)*timeLineGreen.getWidth(this)),timeLineGreen.getHeight(this),this);
+            	g.drawString(""+requireScore,75,50);
+            	g.drawString(""+score,75,90);
+            	g.drawImage(timeLineBg,15,115,165,15,this);
+            	//前两秒钟不改变进度比例以避免进度条异常运动
+            	if(totaltime-lifetime>20)
+            		leftPercent=(1.0*lifetime)/(1.0*totaltime);
+        		g.drawImage(timeLineRed,(int)(20+165*(1.0-leftPercent)),115,180,130,
+								(int)((1.0-leftPercent)*timeLineGreen.getWidth(this)),0,(int)timeLineGreen.getWidth(this),(int)timeLineGreen.getHeight(this),this);
+            	if((1.0*lifetime)/(1.0*totaltime)>=0.3)
+            		g.drawImage(timeLineGreen,(int)(20+165*(1.0-leftPercent)),115,180,130,
+            						(int)((1.0-leftPercent)*timeLineGreen.getWidth(this)),0,(int)timeLineGreen.getWidth(this),(int)timeLineGreen.getHeight(this),this);
             	g.setColor(Color.black);
-                try {
+            	try {
                 	hook.paint(g);
                 } catch (IOException error) {}
                 for (Mineral m : mineralList) {
@@ -236,7 +245,6 @@ public class Stage extends JPanel {
                     }
                 }                
                 g.setColor(Color.red);
-                //g.drawString("Remaining Time:"+(int)(lifetime/10.0)+" Score:"+score+" Goal:"+requireScore,0,15);
                 break;
             case MENU:
                 break;
