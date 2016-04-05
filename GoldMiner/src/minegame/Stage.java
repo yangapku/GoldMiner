@@ -38,6 +38,8 @@ public class Stage extends JPanel {
     StageState stageState;
 
     int score;
+    
+    ExplodeEffect explodeEffect = null;
 
     Hook hook = new Hook(width, 180);
     Timer timer;
@@ -227,6 +229,12 @@ public class Stage extends JPanel {
                 for (Bomb b : bombList) {
                 	b.paint(g);
                 }
+                if (explodeEffect != null) {
+                	explodeEffect.paint(g);
+                	if (explodeEffect.isEnd()) {
+                    	explodeEffect = null;
+                    }
+                }                
                 g.setColor(Color.red);
                 //g.drawString("Remaining Time:"+(int)(lifetime/10.0)+" Score:"+score+" Goal:"+requireScore,0,15);
                 break;

@@ -66,7 +66,7 @@ public class Hook {
     }
 
     boolean hookMineral(Mineral m){
-        if(distance(getX(),getY(),m.x,m.y) < (r+m.r)){
+        if(distance(getX(),getY(),m.x,m.y) < (r/2 + m.r)){
             mineral = m;
             state = HookState.BACKWARD;
             return true;
@@ -74,7 +74,7 @@ public class Hook {
     }
     
     boolean explodeBomb(Bomb b){
-    	if(distance(getX(), getY(), b.x, b.y) < (r + b.r)){
+    	if(distance(getX(), getY(), b.x, b.y) < (r/2 + b.r)){
     		state = HookState.BACKWARD;
     		return true;
     	} else {
@@ -175,7 +175,10 @@ public class Hook {
     		}    		
     	default:
     		/*画线*/
-        	g.drawLine((int)sourceX, (int)(sourceY), (int)getX(), (int)getY());
+    		Graphics2D g2= (Graphics2D)g;
+    		g.setColor(new Color(255,245,238));
+    		g2.setStroke(new BasicStroke(2.0f));
+        	g2.drawLine((int)sourceX, (int)(sourceY), (int)getX(), (int)getY());
     		/*画钩子*/
     		BufferedImage hookImage = ImageIO.read(new File("res/images/hook2.png"));
         	BufferedImage rotatedImage = rotateImage(hookImage, theta);
