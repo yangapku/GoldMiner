@@ -26,7 +26,7 @@ public class Stage extends JPanel {
     double height = 600;
 
     int order;//关数
-    final int totalOrder = 2;
+    final int totalOrder = 5;
 
     /*关卡生成加载的变量*/
     int lifetime;
@@ -41,7 +41,7 @@ public class Stage extends JPanel {
 
     int score;
     
-    ExplodeEffect explodeEffect = null;
+    List<ExplodeEffect> explodeEffectList = new ArrayList<ExplodeEffect>();
 
     Hook hook = new Hook(width, 180);
     Timer timer;
@@ -107,7 +107,7 @@ public class Stage extends JPanel {
                 	double r=Double.parseDouble(st.nextToken());
                 	int value=Integer.parseInt(st.nextToken());
                 	int movingDirection=Integer.parseInt(st.nextToken());
-                	double movingSpeed=Integer.parseInt(st.nextToken());
+                	double movingSpeed=Double.parseDouble(st.nextToken());
                 	boolean withDiamond=st.nextToken().equals("D");
         			mineralList.add(new Mouse(x,y,r,value,
         					movingDirection,movingSpeed, withDiamond));
@@ -248,12 +248,17 @@ public class Stage extends JPanel {
                 for (Bomb b : bombList) {
                 	b.paint(g);
                 }
-                if (explodeEffect != null) {
-                	explodeEffect.paint(g);
-                	if (explodeEffect.isEnd()) {
-                    	explodeEffect = null;
+                for (int i=0, len = explodeEffectList.size(); i < len; ++i) {
+                	if (explodeEffectList.get(i) != null) {
+                    	explodeEffectList.get(i).paint(g);
+                    	if (explodeEffectList.get(i).isEnd()) {
+                        	explodeEffectList.remove(i);
+                        	--i;
+                        	--len;
+                        }
                     }
-                }                
+                }
+                           
                 g.setColor(Color.red);
                 break;
             case MENU:

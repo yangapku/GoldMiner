@@ -15,7 +15,7 @@ import javax.sound.sampled.SourceDataLine;
 
 /**
  * Created by lzc on 4/2/16.
- * Updated by czj
+ * Finalized by czj
  */
 public class Hook {
     private double sourceX; //悬挂点
@@ -123,14 +123,13 @@ public class Hook {
                 }
                 
                 /*判断是否碰到炸弹*/
-                for(int i=0; i<stage.bombList.size(); ++i) {
+                for(int i=0, len = stage.bombList.size(); i<len; ++i) {
                 	Bomb testBomb = stage.bombList.get(i);
                 	if (explodeBomb(testBomb)) {
-                		testBomb.explode(stage, i);
-                		/*播放声音*/
-                    	Thread playSound = new Thread(new SoundPlayer("res/sounds/explosive.wav")); 
-        				playSound.start();
-        				break;
+                		stage.bombList.remove(i);
+                		testBomb.explode();
+                		len = stage.bombList.size();
+                		--i;
                 	}
                 }
                 break;
@@ -261,6 +260,9 @@ class SoundPlayer implements Runnable {
                 line.drain();
                 line.stop();
             }
+            line.close();
+            in.close();
+            
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

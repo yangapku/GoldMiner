@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 /**
  * Created by lzc on 4/2/16.
  * 杨安：为了构造不同类别的矿物对象简单定义了父类的构造方法以及子类
+ * Mouse added by czj
  */
 public abstract class Mineral {
     double x;
