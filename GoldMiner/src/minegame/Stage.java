@@ -28,6 +28,7 @@ public class Stage extends JPanel {
 
     /*关卡生成加载的变量*/
     int lifetime;
+    int totaltime;
     int requireScore;
     List<Mineral> mineralList = new ArrayList<Mineral>();
     List<Bomb> bombList = new ArrayList<Bomb>();
@@ -52,30 +53,52 @@ public class Stage extends JPanel {
         String linedata=br.readLine(); //读关卡时间和分数
         StringTokenizer st=new StringTokenizer(linedata,",");
         lifetime=Integer.parseInt(st.nextToken());
+        totaltime=lifetime;
         requireScore=Integer.parseInt(st.nextToken());
         minercount=Integer.parseInt(st.nextToken());
         for(int i=0;i<minercount;i++){  //读矿物列表
         	linedata=br.readLine();
         	st=new StringTokenizer(linedata,",");  //格式为：矿物类型,x,y,r,value,density
         	String mineralType=st.nextToken();
-        	double x=Double.parseDouble(st.nextToken());
-        	double y=Double.parseDouble(st.nextToken());
-        	double r=Double.parseDouble(st.nextToken());
-        	int value=Integer.parseInt(st.nextToken());
-        	int density=Integer.parseInt(st.nextToken());
         	switch(mineralType){  //根据不同的矿物类型建立不同对象
         		case "S":
+        		{
+                	double x=Double.parseDouble(st.nextToken());
+                	double y=Double.parseDouble(st.nextToken());
+                	double r=Double.parseDouble(st.nextToken());
+                	int value=Integer.parseInt(st.nextToken());
+                	int density=Integer.parseInt(st.nextToken());
         			mineralList.add(new Stone(x,y,r,value,density));
         			break;
+        		}
         		case "G":
+        		{
+                	double x=Double.parseDouble(st.nextToken());
+                	double y=Double.parseDouble(st.nextToken());
+                	double r=Double.parseDouble(st.nextToken());
+                	int value=Integer.parseInt(st.nextToken());
+                	int density=Integer.parseInt(st.nextToken());
         			mineralList.add(new Gold(x,y,r,value,density));
         			break;
+        		}
         		case "D":
+        		{
+                	double x=Double.parseDouble(st.nextToken());
+                	double y=Double.parseDouble(st.nextToken());
+                	double r=Double.parseDouble(st.nextToken());
+                	int value=Integer.parseInt(st.nextToken());
+                	int density=Integer.parseInt(st.nextToken());
         			mineralList.add(new Diamond(x,y,r,value,density));
         			break;
+        		}
         		case "B":
+        		{
+                	double x=Double.parseDouble(st.nextToken());
+                	double y=Double.parseDouble(st.nextToken());
+                	double r=Double.parseDouble(st.nextToken());
         			bombList.add(new Bomb(x,y,r,this));
         			break;
+        		}
         	}
         }
         br.close();
@@ -174,14 +197,27 @@ public class Stage extends JPanel {
             }
         }, 0, 100);
     }
+    Image scoreboard=Toolkit.getDefaultToolkit().createImage("res/images/scoreboard.png");
     Image gameoverPic=Toolkit.getDefaultToolkit().createImage("res/images/gameover.jpg");
     Image gamebgPic=Toolkit.getDefaultToolkit().createImage("res/images/map_bg_0.png");
+    Image timeLineBg=Toolkit.getDefaultToolkit().createImage("res/images/timebg.png");
+    Image timeLineGreen=Toolkit.getDefaultToolkit().createImage("res/images/timegood.png");
+    Image timeLineRed=Toolkit.getDefaultToolkit().createImage("res/images/timepoor.png");
+    Image timeLineCenter=Toolkit.getDefaultToolkit().createImage("res/images/timecenter.png");
     @Override
     public void paint(Graphics g) {
         g.clearRect(0, 0, (int)width, (int)height);
         switch (stageState) {
             case PLAYING:
             	g.drawImage(gamebgPic,0,0,(int)width,(int)height,this);
+            	g.drawImage(scoreboard,30,20,125,80,this);
+            	g.setFont(new Font("Tahoma", Font.BOLD, 28));
+            	g.setColor(Color.white);
+            	g.drawString(""+requireScore,70,50);
+            	g.drawString(""+score,70,90);
+            	g.drawImage(timeLineBg,20,115,140,10,this);
+            	//g.drawImage(timeLineGreen,20,115,160,125,0,0,(int)((1.0*lifetime)/(1.0*totaltime)*timeLineGreen.getWidth(this)),timeLineGreen.getHeight(this),this);
+            	g.setColor(Color.black);
                 try {
                 	hook.paint(g);
                 } catch (IOException error) {}
@@ -192,7 +228,7 @@ public class Stage extends JPanel {
                 	b.paint(g);
                 }
                 g.setColor(Color.red);
-                g.drawString("Remaining Time:"+(int)(lifetime/10.0)+" Score:"+score+" Goal:"+requireScore,0,15);
+                //g.drawString("Remaining Time:"+(int)(lifetime/10.0)+" Score:"+score+" Goal:"+requireScore,0,15);
                 break;
             case MENU:
                 break;
