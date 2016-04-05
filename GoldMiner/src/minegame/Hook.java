@@ -96,10 +96,10 @@ public class Hook {
             	
             	/*控制钩子的方向，到达边界转向*/
             	/*TODO 钩子晃动的范围可以调整*/
-            	if (theta >= Math.PI * 9 / 10) {
+            	if (theta >= Math.PI * 19 / 20) {
             		hookWaitDirection = -1;
             	}
-            	else if (theta <= Math.PI / 10) {
+            	else if (theta <= Math.PI / 20) {
             		hookWaitDirection = 1;
             	}
                 break;

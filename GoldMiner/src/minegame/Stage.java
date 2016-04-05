@@ -187,6 +187,12 @@ public class Stage extends JPanel {
         		((Mouse)i).runMouse();
         	}
         }
+        
+        if (lifetime == 100) {
+        	Thread playSound = new Thread(new SoundPlayer("res/sounds/last-10s-sound.wav"));
+        	playSound.start();
+        }
+        
         repaint();
     }
 
