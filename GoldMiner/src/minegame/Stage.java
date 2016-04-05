@@ -218,7 +218,7 @@ public class Stage extends JPanel {
             	g.drawString(""+requireScore,70,50);
             	g.drawString(""+score,70,90);
             	g.drawImage(timeLineBg,20,115,140,10,this);
-            	//g.drawImage(timeLineGreen,20,115,160,125,0,0,(int)((1.0*lifetime)/(1.0*totaltime)*timeLineGreen.getWidth(this)),timeLineGreen.getHeight(this),this);
+            	g.drawImage(timeLineGreen,20,115,160,125,0,0,(int)((1.0*lifetime)/(1.0*totaltime)*timeLineGreen.getWidth(this)),timeLineGreen.getHeight(this),this);
             	g.setColor(Color.black);
                 try {
                 	hook.paint(g);

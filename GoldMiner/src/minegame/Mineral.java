@@ -67,7 +67,3 @@ class Diamond extends Mineral{
 		g.drawImage(icon, (int)(x-r), (int)(y-r), (int)(2*r), (int)(2*r), null);
 	}
 }
-
-class Mouse extends Mineral {
-	
-}
