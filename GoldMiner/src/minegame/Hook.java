@@ -1,21 +1,17 @@
 package minegame;
 
-import java.applet.AudioClip;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.SourceDataLine;
+
 
 /**
  * Created by lzc on 4/2/16.
@@ -30,6 +26,7 @@ public class Hook {
     private double weight=500.0;
 
     private Mineral mineral;//钩到的物体
+    String soundName; //指定播放声音文件名
 
     HookState state;
     int hookWaitDirection = 1; //控制钩子晃动的方向
@@ -38,7 +35,7 @@ public class Hook {
 
     public Hook(double width, double height){
         sourceX = width/2;
-        sourceY = 180; //需要根据背景调节到合适的起始高度
+        sourceY = height; //需要根据背景调节到合适的起始高度
 
         state = HookState.WAIT;
     }
@@ -71,15 +68,22 @@ public class Hook {
     boolean hookMineral(Mineral m){
         if(distance(getX(),getY(),m.x,m.y) < (r+m.r)){
             mineral = m;
-
             state = HookState.BACKWARD;
             return true;
         }else return false;
     }
-
+    
+    boolean explodeBomb(Bomb b){
+    	if(distance(getX(), getY(), b.x, b.y) < (r + b.r)){
+    		state = HookState.BACKWARD;
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
     
     /*每次时间循环时更新钩子位置和角度, 速度与钩子重量有关; 判断是否抓到矿物 */
-    void refresh(Stage stage) throws UnsupportedAudioFileException, FileNotFoundException, IOException, LineUnavailableException{
+    void refresh(Stage stage){
         switch (state){
             case WAIT:
             	theta += hookWaitDirection * Math.PI / GoldMiner.PERIOD;
@@ -104,10 +108,23 @@ public class Hook {
             	
             	/*判断是否钩到物体*/
                 for(int i=0; i<stage.mineralList.size(); i++){
-                    if(hookMineral(stage.mineralList.get(i))){
-                        stage.mineralList.get(i).hooked(stage,i);
-                        break;
+                    Mineral testMineral = stage.mineralList.get(i);
+                	if(hookMineral(testMineral)){
+                    	testMineral.hooked(stage,i);
+                    	break;
                     }
+                }
+                
+                /*判断是否碰到炸弹*/
+                for(int i=0; i<stage.bombList.size(); ++i) {
+                	Bomb testBomb = stage.bombList.get(i);
+                	if (explodeBomb(testBomb)) {
+                		testBomb.explode(stage, i);
+                		/*播放声音*/
+                    	Thread playSound = new Thread(new SoundPlayer("res/sounds/explosive.wav")); 
+        				playSound.start();
+        				break;
+                	}
                 }
                 break;
                 
@@ -125,18 +142,21 @@ public class Hook {
             	if (d <= 0){
             		if (mineral != null) {
             			stage.score += mineral.value;
-            			if (mineral.value > 100) {
-            				/*播放high-value.mp3*/
-            				/*AudioInputStream highValue = AudioSystem.getAudioInputStream(
-            								new FileInputStream(new File("res/sounds/high-value.mp3")));
-            				AudioFormat highValueFormat = highValue.getFormat();
-            				DataLine.Info dataLineInfo = new DataLine.Info(Clip.class, highValueFormat);
-            				Clip clip = (Clip) AudioSystem.getLine(dataLineInfo);
-            				clip.open(highValue);
-            				clip.start();*/
+            			
+            			if (mineral.value < 50) {
+            				/*指定播放low-value.mp3*/
+            				soundName = "res/sounds/low-value.wav";
+            			} else if (mineral.value >= 300) {
+            				/*指定播放high-value.mp3*/
+            				soundName = "res/sounds/high-value.wav";
             			} else {
-            				/*播放low-value.mp3*/
+            				/*指定播放normal-value.mp3*/
+            				soundName = "res/sounds/normal-value.wav";
             			}
+            			
+            			/*在新线程中播放声音*/
+            			Thread playSound = new Thread(new SoundPlayer(soundName)); 
+        				playSound.start();
             			mineral = null;
             		}
             		d = 0;
@@ -145,7 +165,7 @@ public class Hook {
             	break;
         }
     }
-    
+
     /*画线, 钩子, 钩到的物体*/
     void paint(Graphics g) throws IOException{
     	switch (state) {
@@ -189,6 +209,50 @@ public class Hook {
         graphics2d.drawImage(bufferedimage, 0, 0, null);
         graphics2d.dispose();
         return img;
-    }
+    }    
+}
 
+/*播放声音的类，在独立线程中执行*/
+class SoundPlayer implements Runnable {
+	private String soundName;
+	
+	SoundPlayer(String soundName) {
+		this.soundName = soundName;
+	}
+	
+	public void run() {
+		final File file = new File(soundName);
+
+        try {
+            final AudioInputStream in = 
+            		AudioSystem.getAudioInputStream(file);
+            
+            final int ch = in.getFormat().getChannels();  
+            final float rate = in.getFormat().getSampleRate();  
+            final AudioFormat outFormat = new AudioFormat(
+            		AudioFormat.Encoding.PCM_SIGNED, rate,
+            		16, ch, ch * 2, rate, false);
+            
+            final DataLine.Info info = 
+            		new DataLine.Info(SourceDataLine.class, outFormat);
+            final SourceDataLine line = 
+            		(SourceDataLine) AudioSystem.getLine(info);
+
+            if (line != null) {
+                line.open(outFormat);
+                line.start();
+                final byte[] buffer = new byte[65536];  
+                for (int n = 0; n != -1;
+                		n = AudioSystem
+                				.getAudioInputStream(outFormat, in)
+                				.read(buffer, 0, buffer.length)) {  
+                    line.write(buffer, 0, n);
+                }
+                line.drain();
+                line.stop();
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+	}
 }

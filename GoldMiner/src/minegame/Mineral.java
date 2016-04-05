@@ -32,7 +32,7 @@ public abstract class Mineral {
 
     /*被钩到时的事件, 默认情况为从矿物列表中清除该矿物; 可以重写增加音效,动画,以及炸药桶爆炸的特殊事件*/
     void hooked(Stage stage, int i){
-        stage.mineralList.remove(i);
+    	stage.mineralList.remove(i);
     }
 }
 
@@ -67,4 +67,3 @@ class Diamond extends Mineral{
 		g.drawImage(icon, (int)(x-r), (int)(y-r), (int)(2*r), (int)(2*r), null);
 	}
 }
-

@@ -1,7 +1,5 @@
 package minegame;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 
 import java.awt.*;
@@ -32,6 +30,7 @@ public class Stage extends JPanel {
     int lifetime;
     int requireScore;
     List<Mineral> mineralList = new ArrayList<Mineral>();
+    List<Bomb> bombList = new ArrayList<Bomb>();
 
     enum StageState {MENU, PLAYING, CONFIGURE, PAUSE, GAME_OVER}
 
@@ -39,7 +38,7 @@ public class Stage extends JPanel {
 
     int score;
 
-    Hook hook = new Hook(width, height);
+    Hook hook = new Hook(width, 180);
     Timer timer;
 
     /*Updated by Yangan*/
@@ -73,6 +72,9 @@ public class Stage extends JPanel {
         			break;
         		case "D":
         			mineralList.add(new Diamond(x,y,r,value,density));
+        			break;
+        		case "B":
+        			bombList.add(new Bomb(x,y,r,this));
         			break;
         	}
         }
@@ -114,16 +116,18 @@ public class Stage extends JPanel {
         } else {
             order++;
             if (order < totalOrder) {
+            	bombList.clear(); //有可能上一关的炸弹还没炸完
             	load(order);
             } else {
             	order = 0;
             	score = 0;
+            	bombList.clear(); //有可能上一关的炸弹还没炸完
             	load(order);
             }
         }
     }
 
-    void refresh() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    void refresh() throws IOException {
         if (stageState != StageState.PLAYING) return;
         
         /*如果清空了就直接判断能否进入下一关*/
@@ -164,7 +168,7 @@ public class Stage extends JPanel {
             public void run() {
                 try {
 					refresh();
-				} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
             }
@@ -183,6 +187,9 @@ public class Stage extends JPanel {
                 } catch (IOException error) {}
                 for (Mineral m : mineralList) {
                     m.paint(g);
+                }
+                for (Bomb b : bombList) {
+                	b.paint(g);
                 }
                 g.setColor(Color.red);
                 g.drawString("Remaining Time:"+(int)(lifetime/10.0)+" Score:"+score+" Goal:"+requireScore,0,15);
