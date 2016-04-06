@@ -223,8 +223,8 @@ public class Hook {
 
 /*播放声音的类，在独立线程中执行*/
 class SoundPlayer implements Runnable {
+	public boolean canplay=true;
 	private String soundName;
-	
 	SoundPlayer(String soundName) {
 		this.soundName = soundName;
 	}
@@ -250,8 +250,9 @@ class SoundPlayer implements Runnable {
             if (line != null) {
                 line.open(outFormat);
                 line.start();
+                canplay=true;
                 final byte[] buffer = new byte[65536];  
-                for (int n = 0; n != -1;
+                for (int n = 0; n != -1&&canplay;
                 		n = AudioSystem
                 				.getAudioInputStream(outFormat, in)
                 				.read(buffer, 0, buffer.length)) {  

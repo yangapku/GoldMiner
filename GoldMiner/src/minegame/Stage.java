@@ -45,6 +45,9 @@ public class Stage extends JPanel {
 
     Hook hook = new Hook(width, 180);
     Timer timer;
+    
+    //播放倒计时音效线程的target
+    SoundPlayer playLastSoundThreadTarget=new SoundPlayer("res/sounds/last-10s-sound.wav"); 
 
     /*Updated by Yangan*/
     void load(int order) throws IOException {
@@ -147,8 +150,12 @@ public class Stage extends JPanel {
     }
 
     /*下一关*/
-    void next() throws IOException{
+    void next() throws IOException{ 
+        if(lifetime>0&&lifetime<=100){
+        	playLastSoundThreadTarget.canplay=false;
+        } //如果在倒计时10秒内gameover或者过关应该停掉音乐
         if (score < requireScore) {
+            timer.cancel();
             gameOver();
         } else {
             order++;
@@ -167,14 +174,9 @@ public class Stage extends JPanel {
 	void refresh() throws IOException {
         if (stageState != StageState.PLAYING) return;
         
-        /*如果清空了就直接判断能否进入下一关*/
-        if (mineralList.isEmpty() && ! hook.hasMineral()) {
+        /*如果清空了或时间截止就直接判断能否进入下一关*/
+        if ((mineralList.isEmpty() && ! hook.hasMineral())||lifetime <= 0) {
         	next();
-        }
-
-        if (lifetime <= 0) {
-            timer.cancel();
-            next();
         }
         lifetime--;
         /*for(int i=0; i<mineralList.size(); i++){
@@ -189,8 +191,8 @@ public class Stage extends JPanel {
         }
         
         if (lifetime == 100) {
-        	Thread playSound = new Thread(new SoundPlayer("res/sounds/last-10s-sound.wav"));
-        	playSound.start();
+        	Thread playLastSound = new Thread(playLastSoundThreadTarget);
+        	playLastSound.start();
         }
         
         repaint();
@@ -257,8 +259,7 @@ public class Stage extends JPanel {
                         	--len;
                         }
                     }
-                }
-                           
+                }           
                 g.setColor(Color.red);
                 break;
             case MENU:
