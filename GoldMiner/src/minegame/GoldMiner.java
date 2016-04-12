@@ -21,6 +21,7 @@ public class GoldMiner extends JFrame{
     static final double PERIOD = 20.0;
 
     public GoldMiner() throws IOException{
+    	setTitle("Gold Miner");
         setSize(800,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         stage = new Stage();

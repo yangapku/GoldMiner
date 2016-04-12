@@ -273,12 +273,12 @@ public class Stage extends JPanel {
                 break;
             case MENU:
                 g.drawImage(gamebgPic,0,0,(int)width, (int)height, this);
-                g.drawImage(buttonBg,340,200,150, 50,this);
-                g.drawImage(buttonBg,340,280,150, 50,this);
-                g.setFont(new Font("Tahoma", Font.BOLD, 28));
+                g.drawImage(buttonBg,330,210,150, 50,this);
+                g.drawImage(buttonBg,330,290,150, 50,this);
+                g.setFont(new Font("宋体", 0, 28));
                 g.setColor(Color.white);
-                g.drawString("开始游戏",360,232);
-                g.drawString("退出游戏",360,312);
+                g.drawString("开始游戏",350,242);
+                g.drawString("退出游戏",350,322);
                 //g.drawString("")
 
                 break;
