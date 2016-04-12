@@ -147,6 +147,7 @@ public class Stage extends JPanel {
     }
 
     void gameOver() {
+        score = 0;
         stageState = StageState.GAME_OVER;
     }
 
@@ -157,6 +158,7 @@ public class Stage extends JPanel {
         } //如果在倒计时10秒内gameover或者过关应该停掉音乐
         if (score < requireScore) {
             timer.cancel();
+            bombList.clear();
             gameOver();
         } else {
             order++;
@@ -224,6 +226,7 @@ public class Stage extends JPanel {
     Image retryBtn=Toolkit.getDefaultToolkit().createImage("res/images/replay.png");
 
 
+
     @Override
     public void paint(Graphics g) {
         g.clearRect(0, 0, (int)width, (int)height);
@@ -239,7 +242,7 @@ public class Stage extends JPanel {
             	g.drawString(""+score,75,90);
             	g.drawImage(timeLineBg,15,115,165,15,this);
             	//前两秒钟不改变进度比例以避免进度条异常运动
-            	if(totaltime-lifetime>20)
+            	if(totaltime-lifetime>5)
             		leftPercent=(1.0*lifetime)/(1.0*totaltime);
         		g.drawImage(timeLineRed,(int)(20+165*(1.0-leftPercent)),115,180,130,
 								(int)((1.0-leftPercent)*timeLineGreen.getWidth(this)),0,(int)timeLineGreen.getWidth(this),(int)timeLineGreen.getHeight(this),this);
@@ -282,8 +285,11 @@ public class Stage extends JPanel {
             case CONFIGURE:
                 break;
             case GAME_OVER:
+            	//绘制结束画面
             	g.drawImage(gameoverPic,0,0,(int)width,(int)height,this);
+
                 g.drawImage(retryBtn, 380,400, 64, 64, this);
+
                 break;
         }
     }
