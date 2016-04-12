@@ -126,7 +126,8 @@ public class Stage extends JPanel {
     /* 注册键盘事件 */
     public Stage() throws IOException {
         /*测试时直接从第一关开始*/
-        load(0);
+        //load(0);
+        this.stageState=StageState.MENU;
         this.requestFocus();
     }
 
@@ -218,13 +219,18 @@ public class Stage extends JPanel {
     Image timeLineBg=Toolkit.getDefaultToolkit().createImage("res/images/timebg.png");
     Image timeLineGreen=Toolkit.getDefaultToolkit().createImage("res/images/timegood.png");
     Image timeLineRed=Toolkit.getDefaultToolkit().createImage("res/images/timepoor.png");
+    Image buttonBg=Toolkit.getDefaultToolkit().createImage("res/images/text-background.png");
     Image timeLineCenter=Toolkit.getDefaultToolkit().createImage("res/images/timecenter.png");
+    Image retryBtn=Toolkit.getDefaultToolkit().createImage("res/images/replay.png");
+
+
     @Override
     public void paint(Graphics g) {
         g.clearRect(0, 0, (int)width, (int)height);
         double leftPercent=1.0;
 		switch (stageState) {
             case PLAYING:
+            case PAUSE:
             	g.drawImage(gamebgPic,0,0,(int)width,(int)height,this);
             	g.drawImage(scoreboard,30,20,145,80,this);
             	g.setFont(new Font("Tahoma", Font.BOLD, 28));
@@ -263,13 +269,21 @@ public class Stage extends JPanel {
                 g.setColor(Color.red);
                 break;
             case MENU:
-                break;
-            case PAUSE:
+                g.drawImage(gamebgPic,0,0,(int)width, (int)height, this);
+                g.drawImage(buttonBg,340,200,150, 50,this);
+                g.drawImage(buttonBg,340,280,150, 50,this);
+                g.setFont(new Font("Tahoma", Font.BOLD, 28));
+                g.setColor(Color.white);
+                g.drawString("开始游戏",360,232);
+                g.drawString("退出游戏",360,312);
+                //g.drawString("")
+
                 break;
             case CONFIGURE:
                 break;
             case GAME_OVER:
             	g.drawImage(gameoverPic,0,0,(int)width,(int)height,this);
+                g.drawImage(retryBtn, 380,400, 64, 64, this);
                 break;
         }
     }
